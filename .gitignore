@@ -1,0 +1,40 @@
+# Images, traces & measurement data (never commit)
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+*.bmp
+*.rsml
+*.csv
+*.xlsx
+*.rds
+*.RData
+/images/
+/rootphotos/
+/data/
+/output/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# R / RStudio
+.Rproj.user/
+.Rhistory
+.RData
+*.Rproj
+
+# Secrets
+.env
+*_secret*
+*token*
+*apikey*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*~
