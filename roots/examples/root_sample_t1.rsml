@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<rsml xmlns:po='http://www.plantontology.org/xml-dtd/po.dtd'>
+	<metadata>
+		<version>1</version>
+		<unit>inch</unit>
+		<resolution>299.72</resolution>
+		<last-modified>today</last-modified>
+		<software>smartroot</software>
+		<user>synthetic-demo</user>
+		<file-key>root_sample_t1</file-key>
+		<property-definitions>
+			<property-definition><label>diameter</label><type>float</type><unit>cm</unit></property-definition>
+			<property-definition><label>length</label><type>float</type><unit>cm</unit></property-definition>
+			<property-definition><label>angle</label><type>float</type><unit>degree</unit></property-definition>
+			<property-definition><label>insertion</label><type>float</type><unit>cm</unit></property-definition>
+			<property-definition><label>lauz</label><type>float</type><unit>cm</unit></property-definition>
+			<property-definition><label>lbuz</label><type>float</type><unit>cm</unit></property-definition>
+			<property-definition><label>node-orientation</label><type>float</type><unit>radian</unit></property-definition>
+		</property-definitions>
+		<image>
+			<captured>today</captured>
+			<label>root_sample_t1</label>
+		</image>
+	</metadata>
+	<scene>
+		<plant ID="1" label="rosette">
+			<root ID="1" label="seminal" po:accession="PO:0009005">
+				<properties>
+					<rulerAtOrigin>0.0</rulerAtOrigin>
+					<diameter>0.07</diameter>
+				</properties>
+				<geometry>
+					<polyline>
+						<point x="300.0" y="70.0"/>
+						<point x="289.75" y="104.19"/>
+						<point x="277.84" y="137.5"/>
+						<point x="263.07" y="169.28"/>
+						<point x="244.98" y="199.3"/>
+						<point x="224.02" y="227.8"/>
+						<point x="201.41" y="255.42"/>
+					</polyline>
+				</geometry>
+				<functions>
+					<function name="diameter" domain="polyline">
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+					</function>
+				</functions>
+				<root ID="1.1" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="263.07" y="169.28"/>
+							<point x="277.23" y="185.63"/>
+							<point x="286.77" y="204.34"/>
+							<point x="291.67" y="225.41"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+				<root ID="1.2" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="244.98" y="199.3"/>
+							<point x="220.86" y="197.03"/>
+							<point x="197.37" y="199.91"/>
+							<point x="174.51" y="207.95"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+			</root>
+			<root ID="2" label="seminal" po:accession="PO:0009005">
+				<properties>
+					<rulerAtOrigin>0.0</rulerAtOrigin>
+					<diameter>0.07</diameter>
+				</properties>
+				<geometry>
+					<polyline>
+						<point x="300.0" y="70.0"/>
+						<point x="297.34" y="108.45"/>
+						<point x="295.75" y="146.86"/>
+						<point x="296.02" y="185.21"/>
+						<point x="298.43" y="223.48"/>
+						<point x="302.69" y="261.69"/>
+						<point x="308.03" y="299.86"/>
+					</polyline>
+				</geometry>
+				<functions>
+					<function name="diameter" domain="polyline">
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+					</function>
+				</functions>
+				<root ID="2.1" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="296.02" y="185.21"/>
+							<point x="316.46" y="192.29"/>
+							<point x="334.07" y="203.73"/>
+							<point x="348.86" y="219.52"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+				<root ID="2.2" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="298.43" y="223.48"/>
+							<point x="276.4" y="233.57"/>
+							<point x="257.5" y="247.82"/>
+							<point x="241.73" y="266.21"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+			</root>
+			<root ID="3" label="seminal" po:accession="PO:0009005">
+				<properties>
+					<rulerAtOrigin>0.0</rulerAtOrigin>
+					<diameter>0.07</diameter>
+				</properties>
+				<geometry>
+					<polyline>
+						<point x="300.0" y="70.0"/>
+						<point x="322.28" y="96.59"/>
+						<point x="343.17" y="123.98"/>
+						<point x="361.64" y="152.77"/>
+						<point x="377.33" y="183.16"/>
+						<point x="390.61" y="214.95"/>
+						<point x="402.5" y="247.54"/>
+					</polyline>
+				</geometry>
+				<functions>
+					<function name="diameter" domain="polyline">
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+						<sample>0.07</sample>
+					</function>
+				</functions>
+				<root ID="3.1" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="361.64" y="152.77"/>
+							<point x="383.01" y="149.42"/>
+							<point x="403.93" y="151.25"/>
+							<point x="424.4" y="158.26"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+				<root ID="3.2" label="lateral" po:accession="PO:0009005">
+					<properties>
+						<rulerAtOrigin>0.0</rulerAtOrigin>
+						<diameter>0.03</diameter>
+					</properties>
+					<geometry>
+						<polyline>
+							<point x="377.33" y="183.16"/>
+							<point x="362.62" y="202.41"/>
+							<point x="352.62" y="223.86"/>
+							<point x="347.32" y="247.51"/>
+						</polyline>
+					</geometry>
+					<functions>
+						<function name="diameter" domain="polyline">
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+							<sample>0.03</sample>
+						</function>
+					</functions>
+				</root>
+			</root>
+		</plant>
+	</scene>
+</rsml>

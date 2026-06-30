@@ -15,6 +15,13 @@
 /data/
 /output/
 
+# Bundled demo/sample data (synthetic, non-sensitive) — DO ship these so the
+# tools can be tried immediately. Re-included from the patterns above.
+!seeds/examples/
+!seeds/examples/pappus_sample.png
+!roots/examples/
+!roots/examples/*.rsml
+
 # Python
 __pycache__/
 *.pyc

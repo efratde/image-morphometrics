@@ -2,6 +2,12 @@
 
 Tools I built to extract **quantitative morphological measurements from images of plant structures** — automating trait measurement that would otherwise be slow, subjective manual work. Two domains, one theme: turning photographs into reproducible numbers.
 
+> **▶ Try it immediately — sample data included.**
+> - **Pappus (in-browser, no install):** open [`pappus-analyzer.html`](pappus-analyzer.html) in a browser, click *Drop image or click to upload*, choose [`seeds/examples/pappus_sample.png`](seeds/examples/pappus_sample.png), then **Process** → **Measure** to get area / perimeter / circularity / Feret morphometrics.
+> - **Roots (Python):** `python roots/rsml_analyzer.py roots/examples/root_sample_t1.rsml` prints a full root-architecture report; `root_sample_t1.rsml` (early) and `root_sample_t2.rsml` (later) are a two-time-point pair.
+>
+> All bundled samples are **synthetic** (no real photos, traces, GPS or PII).
+
 ## 1. Root architecture (`roots/`)
 
 A pipeline for analyzing **root-system architecture** from scanned/photographed roots, built around **RSML** (Root System Markup Language) — the standard format for traced root systems.
@@ -38,7 +44,7 @@ image-morphometrics/
 
 ## Data policy
 
-Code only — **no images, traces, or measurement data** are included (`.gitignore`d). Point the scripts at a local image/RSML folder to run.
+**No real images, traces, or measurement data** are included — those are `.gitignore`d. The only data shipped are small **synthetic** demo samples (`seeds/examples/pappus_sample.png`, `roots/examples/*.rsml`) so the tools can be tried immediately; point the scripts at your own local image/RSML folder for real work.
 
 ---
 
