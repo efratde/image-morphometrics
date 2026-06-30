@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pappus Morphology Analyzer - Final Version</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+            font-size: 13px;
+        }
+        
+        .container {
+            height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .header h1 {
+            font-size: 1.5em;
+            margin-bottom: 2px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .top-section {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        .left-panel {
+            width: 55%;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        
+        .right-panel {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            background: #fff;
+            border-left: 1px solid #dee2e6;
+            overflow: hidden;
+        }
+        
+        .bottom-section {
+            background: #fff;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .panel-header {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #667eea;
+            flex-shrink: 0;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 6px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+        
+        .upload-area:hover {
+            background: #f0f4ff;
+            transform: translateY(-1px);
+        }
+        
+        .upload-area.dragover {
+            background: #e0e7ff;
+            border-color: #764ba2;
+        }
+        
+        .upload-area p {
+            font-size: 0.85em;
+            margin: 3px 0;
+        }
+        
+        .tool-buttons {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        
+        .tool-btn {
+            padding: 5px 10px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+        
+        .tool-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .canvas-container {
+            position: relative;
+            background: white;
+            border-radius: 6px;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            overflow: auto;
+            height: 100%;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #fafafa;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            background: rgba(255,255,255,0.95);
+            padding: 3px;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        
+        .zoom-btn {
+            width: 22px;
+            height: 22px;
+            border: 1px solid #ccc;
+            background: white;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .zoom-btn:hover {
+            background: #f0f0f0;
+            border-color: #999;
+        }
+        
+        .zoom-level {
+            font-size: 9px;
+            text-align: center;
+            padding: 2px;
+            background: #f8f9fa;
+            border-radius: 3px;
+        }
+        
+        canvas {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+        }
+        
+        .controls-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        
+        .control-group {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .control-group h3 {
+            color: #495057;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .control-item {
+            margin-bottom: 8px;
+        }
+        
+        .control-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 3px;
+            color: #495057;
+            font-weight: 500;
+            font-size: 0.8em;
+        }
+        
+        .control-help {
+            font-size: 0.7em;
+            color: #6c757d;
+            font-style: italic;
+            margin-top: 2px;
+            line-height: 1.2;
+        }
+        
+        .control-input-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .control-value {
+            min-width: 35px;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.8em;
+            text-align: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 2px;
+        }
+        
+        .control-btn {
+            padding: 2px 5px;
+            border: 1px solid #ccc;
+            background: #f8f9fa;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            min-width: 20px;
+        }
+        
+        .control-btn:hover {
+            background: #e9ecef;
+            border-color: #999;
+        }
+        
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .checkbox-row input[type="checkbox"] {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .radio-group {
+            display: flex;
+            gap: 10px;
+            margin: 4px 0;
+        }
+        
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.8em;
+        }
+        
+        .button-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+        }
+        
+        .button-row button {
+            flex: 1;
+        }
+        
+        button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        
+        .scale-grid {
+            display: flex;
+            gap: 4px;
+            margin: 6px 0;
+        }
+        
+        .scale-grid button {
+            flex: 1;
+            padding: 4px;
+            background: white;
+            border: 1px solid #667eea;
+            color: #667eea;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .scale-grid button.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .scale-input {
+            display: flex;
+            gap: 5px;
+            align-items: center;
+            margin-top: 5px;
+        }
+        
+        .scale-input input {
+            width: 45px;
+            padding: 3px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 11px;
+        }
+        
+        .scale-input label {
+            font-size: 0.75em;
+            color: #666;
+        }
+        
+        .instructions {
+            background: #fff3cd;
+            border-left: 3px solid #ffc107;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.75em;
+        }
+        
+        .instructions h4 {
+            color: #856404;
+            margin-bottom: 4px;
+            font-size: 0.85em;
+        }
+        
+        .instructions ol {
+            margin-left: 16px;
+            color: #856404;
+        }
+        
+        .instructions li {
+            margin-bottom: 2px;
+        }
+        
+        .measurements-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            margin-bottom: 10px;
+        }
+        
+        .measurements-table th {
+            background: #667eea;
+            color: white;
+            padding: 6px;
+            text-align: left;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 5;
+        }
+        
+        .measurements-table td {
+            padding: 5px 6px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .measurements-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .table-container {
+            flex: 1;
+            overflow-y: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .current-measurement {
+            background: #e8f4f8;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 0.8em;
+        }
+        
+        .current-measurement h4 {
+            color: #0c5460;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+        }
+        
+        .measurement-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 2px 0;
+        }
+        
+        .measurement-label {
+            color: #495057;
+        }
+        
+        .measurement-value {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .sample-name-input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-bottom: 6px;
+        }
+        
+        .processing-indicator {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(102, 126, 234, 0.95);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            z-index: 1000;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .processing-indicator.active {
+            display: block;
+        }
+        
+        #fileInput, #maskFileInput {
+            display: none;
+        }
+        
+        /* Scrollbar styling */
+        .controls-container::-webkit-scrollbar,
+        .table-container::-webkit-scrollbar {
+            width: 5px;
+        }
+        
+        .controls-container::-webkit-scrollbar-track,
+        .table-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 3px;
+        }
+        
+        .controls-container::-webkit-scrollbar-thumb,
+        .table-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 3px;
+        }
+        
+        .controls-container::-webkit-scrollbar-thumb:hover,
+        .table-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        
+        /* Range slider improvements */
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 5px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            flex: 1;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌱 Pappus Morphology Analyzer</h1>
+            <p>Scientific measurement tool for wind-dispersed seeds</p>
+        </div>
+        
+        <div class="main-layout">
+            <div class="top-section">
+                <!-- Left Panel: Image & Controls -->
+                <div class="left-panel">
+                <h2 class="panel-header">Image Processing</h2>
+                
+                <div class="upload-area" id="uploadArea">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#667eea" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <p style="color: #667eea; font-weight: 600;">Drop image or click to upload</p>
+                </div>
+                
+                <div class="tool-buttons">
+                    <button class="tool-btn" data-tool="eraser">Eraser</button>
+                    <button class="tool-btn" data-tool="hub">Set Hub</button>
+                    <button class="tool-btn" data-tool="exclude">Exclude ROI</button>
+                    <button class="btn-secondary" onclick="clearExclusions()">Clear ROIs</button>
+                </div>
+                
+                <div class="canvas-container">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoomIn">+</button>
+                        <div class="zoom-level" id="zoomLevel">100%</div>
+                        <button class="zoom-btn" id="zoomOut">−</button>
+                        <button class="zoom-btn" id="zoomReset">⌂</button>
+                    </div>
+                    <div class="canvas-wrapper" id="canvasWrapper">
+                        <canvas id="canvas"></canvas>
+                    </div>
+                </div>
+                </div>
+                
+                <!-- Right Panel: Controls & Measurements -->
+                <div class="right-panel">
+                <h2 class="panel-header">Controls</h2>
+                
+                <div class="instructions">
+                    <h4>Quick Guide:</h4>
+                    <ol>
+                        <li>Upload image (shows original for calibration)</li>
+                        <li>Calibrate scale on original image</li>
+                        <li>Enter sample name (from label)</li>
+                        <li>Process, then Measure</li>
+                        <li>Results accumulate in table below</li>
+                    </ol>
+                </div>
+                
+                <div class="controls-container">
+                    <!-- Scale Calibration -->
+                    <div class="control-group">
+                        <h3>Scale Calibration</h3>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Grid Squares to Span</label>
+                            <div class="scale-grid">
+                                <button data-squares="1">1</button>
+                                <button data-squares="5">5</button>
+                                <button data-squares="10" class="active">10</button>
+                            </div>
+                            <div class="control-help">Click two points spanning N grid squares on original image</div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <div class="checkbox-row">
+                                <input type="checkbox" id="rememberScale">
+                                <label for="rememberScale" class="control-label">Remember scale</label>
+                            </div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <div class="scale-input">
+                                <input type="number" id="pixelSize" value="1" step="0.01">
+                                <label>px =</label>
+                                <input type="number" id="mmSize" value="1" step="0.01">
+                                <label>mm</label>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-primary" onclick="startScaleCalibration()" style="width: 100%; margin-top: 6px;">Calibrate Scale</button>
+                    </div>
+                    
+                    <!-- Sample Name -->
+                    <div class="control-group">
+                        <h3>Sample Identification</h3>
+                        <input type="text" class="sample-name-input" id="sampleName" placeholder="Enter sample name from label">
+                        <div class="control-help">This will be the unique identifier in the results table</div>
+                    </div>
+                    
+                    <!-- External Mask -->
+                    <div class="control-group">
+                        <h3>External Mask</h3>
+                        <button class="btn-info" id="importMaskBtn" style="width: 100%;">Import Mask (ilastik/TWS)</button>
+                        <div id="maskStatus" class="control-help" style="margin-top: 4px;"></div>
+                    </div>
+                    
+                    <!-- Preprocessing & Threshold -->
+                    <div class="control-group">
+                        <h3>Preprocessing & Threshold</h3>
+                        
+                        <div class="control-item">
+                            <div class="checkbox-row">
+                                <input type="checkbox" id="claheToggle">
+                                <label for="claheToggle" class="control-label">CLAHE Enhancement</label>
+                            </div>
+                            <div class="control-help">Enhances local contrast. Use sparingly as it can oversaturate.</div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Threshold Mode</label>
+                            <div class="radio-group">
+                                <div class="radio-item">
+                                    <input type="radio" id="threshAuto" name="threshMode" value="auto" checked>
+                                    <label for="threshAuto">Auto (Otsu)</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="threshManual" name="threshMode" value="manual">
+                                    <label for="threshManual">Manual</label>
+                                </div>
+                            </div>
+                            <div class="control-help">Separates pappus (white) from background (black)</div>
+                            
+                            <div id="manualThresholdContainer" style="display: none; margin-top: 6px;">
+                                <div class="control-input-row">
+                                    <input type="range" id="threshold" min="0" max="255" value="128">
+                                    <span class="control-value" id="thresholdValue">128</span>
+                                    <div class="control-buttons">
+                                        <button class="control-btn" onclick="adjustThreshold(-5)">-5</button>
+                                        <button class="control-btn" onclick="adjustThreshold(5)">+5</button>
+                                    </div>
+                                </div>
+                                <div class="control-help">Higher = only brightest pixels; Lower = includes dimmer pixels</div>
+                            </div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Gaussian Blur</label>
+                            <div class="control-input-row">
+                                <input type="range" id="blur" min="0" max="10" value="2" step="0.5">
+                                <span class="control-value" id="blurValue">2.0</span>
+                                <div class="control-buttons">
+                                    <button class="control-btn" onclick="adjustBlur(-0.5)">-</button>
+                                    <button class="control-btn" onclick="adjustBlur(0.5)">+</button>
+                                </div>
+                            </div>
+                            <div class="control-help">Smooths noise. High = smoother but less detail</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Morphology -->
+                    <div class="control-group">
+                        <h3>Morphology & Filtering</h3>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Morphological Close</label>
+                            <div class="control-input-row">
+                                <input type="range" id="morphology" min="0" max="10" value="2">
+                                <span class="control-value" id="morphValue">2</span>
+                                <div class="control-buttons">
+                                    <button class="control-btn" onclick="adjustMorphology(-1)">-</button>
+                                    <button class="control-btn" onclick="adjustMorphology(1)">+</button>
+                                </div>
+                            </div>
+                            <div class="control-help">Fills gaps. High = fills larger gaps</div>
+                        </div>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Min Particle Size (px²)</label>
+                            <div class="control-input-row">
+                                <input type="range" id="minParticleSize" min="0" max="1000" value="100" step="10">
+                                <span class="control-value" id="minParticleValue">100</span>
+                                <div class="control-buttons">
+                                    <button class="control-btn" onclick="adjustParticleSize(-50)">-50</button>
+                                    <button class="control-btn" onclick="adjustParticleSize(50)">+50</button>
+                                </div>
+                            </div>
+                            <div class="control-help">Removes small noise. High = removes more</div>
+                        </div>
+                    </div>
+                    
+                    
+                    <!-- Tool Settings -->
+                    <div class="control-group">
+                        <h3>Tool Settings</h3>
+                        
+                        <div class="control-item">
+                            <label class="control-label">Eraser Size (px)</label>
+                            <div class="control-input-row">
+                                <input type="range" id="toolSize" min="1" max="50" value="5">
+                                <span class="control-value" id="toolSizeValue">5</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="control-group">
+                        <h3>Actions</h3>
+                        <div class="button-row">
+                            <button class="btn-primary" onclick="processImage()">Process</button>
+                            <button class="btn-secondary" onclick="resetImage()">Reset</button>
+                        </div>
+                        <div class="button-row">
+                            <button class="btn-success" onclick="measurePappus()">Measure</button>
+                            <button class="btn-info" onclick="addToTable()">Add to Table</button>
+                        </div>
+                        <div class="button-row">
+                            <button class="btn-secondary" onclick="togglePerimeter()" id="perimeterBtn" disabled>Toggle Perimeter</button>
+                            <button class="btn-warning" onclick="exportTableCSV()">Export Table CSV</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Measurement -->
+                    <div class="current-measurement" id="currentMeasurement" style="display: none;">
+                        <h4>Current Measurement</h4>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Area:</span>
+                            <span class="measurement-value" id="areaValue">-</span>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Perimeter:</span>
+                            <span class="measurement-value" id="perimeterValue">-</span>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Circularity:</span>
+                            <span class="measurement-value" id="circularityValue">-</span>
+                        </div>
+                        <div class="measurement-row">
+                            <span class="measurement-label">Max Feret:</span>
+                            <span class="measurement-value" id="feretMaxValue">-</span>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Section: Measurements Table -->
+            <div class="bottom-section">
+                <h2 class="panel-header">Accumulated Measurements</h2>
+                <div class="table-container" style="max-height: 220px;">
+                    <table class="measurements-table" id="measurementsTable">
+                        <thead>
+                            <tr>
+                                <th>Sample ID</th>
+                                <th>Area (mm²)</th>
+                                <th>Perimeter (mm)</th>
+                                <th>Circularity</th>
+                                <th>Solidity</th>
+                                <th>Max Feret (mm)</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="processing-indicator" id="processingIndicator">Processing...</div>
+    
+    <input type="file" id="fileInput" accept="image/*">
+    <input type="file" id="maskFileInput" accept="image/*">
+    
+    <script>
+        // Global state
+        let canvas = document.getElementById('canvas');
+        let ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        let originalImage = null;
+        let fullResImageData = null;
+        let processedImage = null;
+        let externalMask = null;
+        let currentTool = null;
+        let isDrawing = false;
+        let scale = 1; // mm per pixel
+        let gridSquares = 10;
+        
+        // State variables
+        let hubX = null;
+        let hubY = null;
+        let exclusionRects = [];
+        let drawingRect = false;
+        let rectStart = null;
+        let sessionScale = null;
+        let fileName = '';
+        let showingOriginal = true;
+        
+        // Display scaling
+        const MAX_DISPLAY_SIZE = 600;
+        let displayScale = 1;
+        
+        // Zoom variables
+        let zoomLevel = 1;
+        
+        // Calibration variables
+        let calibrationPoints = [];
+        let isCalibrating = false;
+        
+        // Perimeter visualization
+        let showingPerimeter = false;
+        let perimeterData = null;
+        let lastMeasurements = null;
+        
+        // Table data
+        let measurementsTable = [];
+        
+        // Optimization
+        let processTimeout = null;
+        const PROCESS_DELAY = 100;
+        
+        // Setup event listeners
+        document.getElementById('uploadArea').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+        
+        document.getElementById('uploadArea').addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        });
+        
+        document.getElementById('uploadArea').addEventListener('dragleave', (e) => {
+            e.currentTarget.classList.remove('dragover');
+        });
+        
+        document.getElementById('uploadArea').addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+        
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+        
+        document.getElementById('importMaskBtn').addEventListener('click', () => {
+            document.getElementById('maskFileInput').click();
+        });
+        
+        document.getElementById('maskFileInput').addEventListener('change', (e) => {
+            handleMaskFile(e.target.files[0]);
+        });
+        
+        // Tool selection
+        document.querySelectorAll('.tool-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                if (e.target.dataset.tool === 'calibrate') {
+                    startScaleCalibration();
+                } else {
+                    document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentTool = e.target.dataset.tool;
+                }
+            });
+        });
+        
+        // Grid squares selector
+        document.querySelectorAll('.scale-grid button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.scale-grid button').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                gridSquares = parseInt(e.target.dataset.squares);
+            });
+        });
+        
+        // Threshold mode toggle
+        document.querySelectorAll('input[name="threshMode"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                const manualContainer = document.getElementById('manualThresholdContainer');
+                manualContainer.style.display = e.target.value === 'manual' ? 'block' : 'none';
+                if (fullResImageData && !showingOriginal) {
+                    debouncedProcess();
+                }
+            });
+        });
+        
+        // CLAHE toggle with real-time updates
+        document.getElementById('claheToggle').addEventListener('change', () => {
+            if (fullResImageData && !showingOriginal) {
+                debouncedProcess();
+            }
+        });
+        
+        // Slider updates with real-time processing
+        function setupSlider(sliderId, valueId, suffix = '') {
+            const slider = document.getElementById(sliderId);
+            const valueEl = document.getElementById(valueId);
+            
+            slider.addEventListener('input', (e) => {
+                let value = parseFloat(e.target.value);
+                valueEl.textContent = value + suffix;
+                
+                // Trigger real-time processing if image is loaded and not showing original
+                if (fullResImageData && !showingOriginal) {
+                    debouncedProcess();
+                }
+            });
+        }
+        
+        // Debounced processing for real-time updates
+        function debouncedProcess() {
+            if (processTimeout) {
+                clearTimeout(processTimeout);
+            }
+            processTimeout = setTimeout(() => {
+                processImage();
+            }, PROCESS_DELAY);
+        }
+        
+        setupSlider('blur', 'blurValue');
+        setupSlider('threshold', 'thresholdValue');
+        setupSlider('morphology', 'morphValue');
+        setupSlider('minParticleSize', 'minParticleValue');
+        setupSlider('toolSize', 'toolSizeValue');
+        
+        // Quick adjustment functions with real-time updates
+        function adjustBlur(delta) {
+            const slider = document.getElementById('blur');
+            const currentValue = parseFloat(slider.value);
+            const newValue = Math.max(0, Math.min(10, currentValue + delta));
+            slider.value = newValue;
+            document.getElementById('blurValue').textContent = newValue.toFixed(1);
+            
+            // Force trigger the input event to ensure slider event handler is called
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        function adjustThreshold(delta) {
+            const slider = document.getElementById('threshold');
+            const currentValue = parseInt(slider.value);
+            const newValue = Math.max(0, Math.min(255, currentValue + delta));
+            slider.value = newValue;
+            document.getElementById('thresholdValue').textContent = newValue;
+            
+            // Force trigger the input event to ensure slider event handler is called
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        function adjustMorphology(delta) {
+            const slider = document.getElementById('morphology');
+            const currentValue = parseInt(slider.value);
+            const newValue = Math.max(0, Math.min(10, currentValue + delta));
+            slider.value = newValue;
+            document.getElementById('morphValue').textContent = newValue;
+            
+            // Force trigger the input event to ensure slider event handler is called
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        function adjustParticleSize(delta) {
+            const slider = document.getElementById('minParticleSize');
+            const currentValue = parseInt(slider.value);
+            const newValue = Math.max(0, Math.min(1000, currentValue + delta));
+            slider.value = newValue;
+            document.getElementById('minParticleValue').textContent = newValue;
+            
+            // Force trigger the input event to ensure slider event handler is called
+            slider.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+        
+        // Zoom controls
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            setZoom(zoomLevel * 1.25);
+        });
+        
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            setZoom(zoomLevel / 1.25);
+        });
+        
+        document.getElementById('zoomReset').addEventListener('click', () => {
+            zoomLevel = 1;
+            canvas.style.transform = '';
+            document.getElementById('zoomLevel').textContent = '100%';
+        });
+        
+        // Canvas events
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('mouseout', handleMouseUp);
+        
+        function handleFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                fileName = file.name;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // Calculate display scale
+                        const maxDim = Math.max(img.width, img.height);
+                        displayScale = maxDim > MAX_DISPLAY_SIZE ? MAX_DISPLAY_SIZE / maxDim : 1;
+                        
+                        // Store full resolution
+                        const tempCanvas = document.createElement('canvas');
+                        const tempCtx = tempCanvas.getContext('2d');
+                        tempCanvas.width = img.width;
+                        tempCanvas.height = img.height;
+                        tempCtx.drawImage(img, 0, 0);
+                        fullResImageData = tempCtx.getImageData(0, 0, img.width, img.height);
+                        
+                        // Setup display canvas
+                        canvas.width = Math.floor(img.width * displayScale);
+                        canvas.height = Math.floor(img.height * displayScale);
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        originalImage = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        
+                        // Show original image
+                        showingOriginal = true;
+                        ctx.putImageData(originalImage, 0, 0);
+                        
+                        // Auto-detect hub
+                        autoDetectHub();
+                        
+                        // Use session scale if available
+                        if (sessionScale && document.getElementById('rememberScale').checked) {
+                            scale = sessionScale;
+                            const pixelSize = 1 / scale;
+                            document.getElementById('pixelSize').value = pixelSize.toFixed(2);
+                            document.getElementById('mmSize').value = '1.00';
+                        }
+                        
+                        // Reset current measurement display
+                        document.getElementById('currentMeasurement').style.display = 'none';
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function handleMaskFile(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        if (fullResImageData) {
+                            const tempCanvas = document.createElement('canvas');
+                            const tempCtx = tempCanvas.getContext('2d');
+                            tempCanvas.width = fullResImageData.width;
+                            tempCanvas.height = fullResImageData.height;
+                            tempCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
+                            
+                            const maskData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+                            externalMask = new Uint8Array(tempCanvas.width * tempCanvas.height);
+                            
+                            for (let i = 0; i < externalMask.length; i++) {
+                                const gray = 0.299 * maskData.data[i * 4] + 
+                                           0.587 * maskData.data[i * 4 + 1] + 
+                                           0.114 * maskData.data[i * 4 + 2];
+                                externalMask[i] = gray >= 128 ? 1 : 0;
+                            }
+                            
+                            document.getElementById('maskStatus').textContent = 'Mask loaded successfully';
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+        
+        function autoDetectHub() {
+            if (!fullResImageData) return;
+            
+            const data = fullResImageData.data;
+            const W = fullResImageData.width;
+            const H = fullResImageData.height;
+            
+            const x0 = Math.floor(W * 0.3);
+            const x1 = Math.floor(W * 0.7);
+            const y0 = Math.floor(H * 0.3);
+            const y1 = Math.floor(H * 0.7);
+            
+            let maxIntensity = 0;
+            let maxX = W / 2;
+            let maxY = H / 2;
+            
+            for (let y = y0; y < y1; y += 5) {
+                for (let x = x0; x < x1; x += 5) {
+                    const idx = (y * W + x) * 4;
+                    const gray = 0.299 * data[idx] + 0.587 * data[idx + 1] + 0.114 * data[idx + 2];
+                    if (gray > maxIntensity) {
+                        maxIntensity = gray;
+                        maxX = x;
+                        maxY = y;
+                    }
+                }
+            }
+            
+            hubX = maxX;
+            hubY = maxY;
+        }
+        
+        function showProcessing() {
+            document.getElementById('processingIndicator').classList.add('active');
+        }
+        
+        function hideProcessing() {
+            document.getElementById('processingIndicator').classList.remove('active');
+        }
+        
+        function processImage() {
+            if (!fullResImageData) return;
+            
+            showingOriginal = false;
+            showProcessing();
+            
+            setTimeout(() => {
+                const data = new Uint8ClampedArray(fullResImageData.data);
+                const width = fullResImageData.width;
+                const height = fullResImageData.height;
+                
+                // Get parameters
+                const claheEnabled = document.getElementById('claheToggle').checked;
+                const blurAmount = parseFloat(document.getElementById('blur').value);
+                const thresholdMode = document.querySelector('input[name="threshMode"]:checked').value;
+                const threshold = parseInt(document.getElementById('threshold').value);
+                const morphSize = parseInt(document.getElementById('morphology').value);
+                const minParticleSize = parseInt(document.getElementById('minParticleSize').value);
+                
+                // Debug logging
+                console.log('Processing with:', { thresholdMode, threshold, claheEnabled, blurAmount, morphSize, minParticleSize });
+                
+                let processedData = new Uint8ClampedArray(data);
+                
+                if (externalMask) {
+                    for (let i = 0; i < externalMask.length; i++) {
+                        const val = externalMask[i] ? 255 : 0;
+                        processedData[i * 4] = val;
+                        processedData[i * 4 + 1] = val;
+                        processedData[i * 4 + 2] = val;
+                    }
+                } else {
+                    // Conservative CLAHE
+                    if (claheEnabled) {
+                        processedData = applyConservativeCLAHE(processedData, width, height);
+                    }
+                    
+                    if (blurAmount > 0) {
+                        processedData = fastBlur(processedData, width, height, blurAmount);
+                    }
+                    
+                    let thresh = threshold;
+                    if (thresholdMode === 'auto') {
+                        thresh = fastOtsu(processedData, width, height);
+                        console.log('Using Otsu threshold:', thresh);
+                    } else {
+                        console.log('Using manual threshold:', thresh);
+                    }
+                    processedData = fastThreshold(processedData, width, height, thresh);
+                    
+                    if (morphSize > 0) {
+                        processedData = fastMorphClose(processedData, width, height, morphSize);
+                    }
+                    
+                    if (minParticleSize > 0) {
+                        processedData = fastRemoveSmall(processedData, width, height, minParticleSize);
+                    }
+                }
+                
+                // Apply exclusion rectangles
+                for (const rect of exclusionRects) {
+                    const scaledRect = {
+                        left: Math.floor(rect.left / displayScale),
+                        right: Math.floor(rect.right / displayScale),
+                        top: Math.floor(rect.top / displayScale),
+                        bottom: Math.floor(rect.bottom / displayScale)
+                    };
+                    
+                    for (let y = scaledRect.top; y <= scaledRect.bottom; y++) {
+                        for (let x = scaledRect.left; x <= scaledRect.right; x++) {
+                            if (x >= 0 && x < width && y >= 0 && y < height) {
+                                const idx = (y * width + x) * 4;
+                                processedData[idx] = 0;
+                                processedData[idx + 1] = 0;
+                                processedData[idx + 2] = 0;
+                            }
+                        }
+                    }
+                }
+                
+                // Keep hub component if set
+                if (hubX !== null && hubY !== null) {
+                    processedData = keepHubComponent(processedData, width, height, hubX, hubY);
+                }
+                
+                processedImage = new ImageData(processedData, width, height);
+                updateDisplay(processedData, width, height);
+                hideProcessing();
+            }, 10);
+        }
+        
+        function updateDisplay(processedData, width, height) {
+            const displayData = new Uint8ClampedArray(canvas.width * canvas.height * 4);
+            
+            for (let y = 0; y < canvas.height; y++) {
+                for (let x = 0; x < canvas.width; x++) {
+                    const srcX = Math.min(Math.floor(x / displayScale), width - 1);
+                    const srcY = Math.min(Math.floor(y / displayScale), height - 1);
+                    const srcIdx = (srcY * width + srcX) * 4;
+                    const dstIdx = (y * canvas.width + x) * 4;
+                    
+                    displayData[dstIdx] = processedData[srcIdx];
+                    displayData[dstIdx + 1] = processedData[srcIdx + 1];
+                    displayData[dstIdx + 2] = processedData[srcIdx + 2];
+                    displayData[dstIdx + 3] = 255;
+                }
+            }
+            
+            const displayImage = new ImageData(displayData, canvas.width, canvas.height);
+            ctx.putImageData(displayImage, 0, 0);
+        }
+        
+        // Conservative CLAHE that doesn't oversaturate
+        function applyConservativeCLAHE(data, width, height) {
+            const result = new Uint8ClampedArray(data);
+            const hist = new Array(256).fill(0);
+            
+            // Build histogram
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+                hist[gray]++;
+            }
+            
+            // Clip histogram more aggressively
+            const clipLimit = (width * height) / 256 * 1.5; // Much lower clip limit
+            let excess = 0;
+            for (let i = 0; i < 256; i++) {
+                if (hist[i] > clipLimit) {
+                    excess += hist[i] - clipLimit;
+                    hist[i] = clipLimit;
+                }
+            }
+            
+            // Redistribute excess
+            const avgIncrease = excess / 256;
+            for (let i = 0; i < 256; i++) {
+                hist[i] += avgIncrease;
+            }
+            
+            // Build conservative LUT
+            const lut = new Uint8Array(256);
+            let sum = 0;
+            const total = width * height;
+            for (let i = 0; i < 256; i++) {
+                sum += hist[i];
+                // More conservative mapping
+                const mappedValue = Math.round((sum * 200) / total); // Map to 0-200 instead of 0-255
+                lut[i] = Math.min(mappedValue + i * 0.2, 255); // Blend with original
+            }
+            
+            // Apply LUT
+            for (let i = 0; i < result.length; i += 4) {
+                const gray = Math.round(0.299 * result[i] + 0.587 * result[i + 1] + 0.114 * result[i + 2]);
+                const enhanced = lut[gray];
+                // Blend enhanced with original (70% original, 30% enhanced)
+                const blended = Math.round(gray * 0.7 + enhanced * 0.3);
+                result[i] = blended;
+                result[i + 1] = blended;
+                result[i + 2] = blended;
+            }
+            
+            return result;
+        }
+        
+        function fastBlur(data, width, height, radius) {
+            if (radius < 0.5) return data;
+            
+            const result = new Uint8ClampedArray(data);
+            const size = Math.round(radius);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let r = 0, g = 0, b = 0, count = 0;
+                    
+                    for (let dy = -size; dy <= size; dy++) {
+                        for (let dx = -size; dx <= size; dx++) {
+                            const ny = Math.max(0, Math.min(height - 1, y + dy));
+                            const nx = Math.max(0, Math.min(width - 1, x + dx));
+                            const idx = (ny * width + nx) * 4;
+                            
+                            r += data[idx];
+                            g += data[idx + 1];
+                            b += data[idx + 2];
+                            count++;
+                        }
+                    }
+                    
+                    const idx = (y * width + x) * 4;
+                    result[idx] = r / count;
+                    result[idx + 1] = g / count;
+                    result[idx + 2] = b / count;
+                    result[idx + 3] = data[idx + 3];
+                }
+            }
+            
+            return result;
+        }
+        
+        function fastOtsu(data, width, height) {
+            const hist = new Array(256).fill(0);
+            
+            for (let i = 0; i < data.length; i += 4) {
+                const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+                hist[gray]++;
+            }
+            
+            let total = width * height;
+            let sum = 0;
+            for (let i = 0; i < 256; i++) sum += i * hist[i];
+            
+            let sumB = 0, wB = 0, wF = 0;
+            let maxVar = 0, threshold = 0;
+            
+            for (let t = 0; t < 256; t++) {
+                wB += hist[t];
+                if (wB === 0) continue;
+                
+                wF = total - wB;
+                if (wF === 0) break;
+                
+                sumB += t * hist[t];
+                const mB = sumB / wB;
+                const mF = (sum - sumB) / wF;
+                const varBetween = wB * wF * (mB - mF) * (mB - mF);
+                
+                if (varBetween > maxVar) {
+                    maxVar = varBetween;
+                    threshold = t;
+                }
+            }
+            
+            return threshold;
+        }
+        
+        function fastThreshold(data, width, height, threshold) {
+            const result = new Uint8ClampedArray(data);
+            
+            for (let i = 0; i < result.length; i += 4) {
+                const gray = 0.299 * result[i] + 0.587 * result[i + 1] + 0.114 * result[i + 2];
+                const val = gray > threshold ? 255 : 0;
+                result[i] = val;
+                result[i + 1] = val;
+                result[i + 2] = val;
+            }
+            
+            return result;
+        }
+        
+        function fastMorphClose(data, width, height, radius) {
+            if (radius === 0) return data;
+            
+            let result = fastDilate(data, width, height, radius);
+            result = fastErode(result, width, height, radius);
+            return result;
+        }
+        
+        function fastDilate(data, width, height, radius) {
+            const result = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let maxVal = 0;
+                    
+                    for (let dy = -radius; dy <= radius; dy++) {
+                        for (let dx = -radius; dx <= radius; dx++) {
+                            const ny = y + dy;
+                            const nx = x + dx;
+                            if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                                maxVal = Math.max(maxVal, data[(ny * width + nx) * 4]);
+                            }
+                        }
+                    }
+                    
+                    const idx = (y * width + x) * 4;
+                    result[idx] = result[idx + 1] = result[idx + 2] = maxVal;
+                }
+            }
+            
+            return result;
+        }
+        
+        function fastErode(data, width, height, radius) {
+            const result = new Uint8ClampedArray(data);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let minVal = 255;
+                    
+                    for (let dy = -radius; dy <= radius; dy++) {
+                        for (let dx = -radius; dx <= radius; dx++) {
+                            const ny = y + dy;
+                            const nx = x + dx;
+                            if (ny >= 0 && ny < height && nx >= 0 && nx < width) {
+                                minVal = Math.min(minVal, data[(ny * width + nx) * 4]);
+                            }
+                        }
+                    }
+                    
+                    const idx = (y * width + x) * 4;
+                    result[idx] = result[idx + 1] = result[idx + 2] = minVal;
+                }
+            }
+            
+            return result;
+        }
+        
+        function fastRemoveSmall(data, width, height, minSize) {
+            if (minSize === 0) return data;
+            
+            const result = new Uint8ClampedArray(data);
+            const visited = new Uint8Array(width * height);
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = y * width + x;
+                    const pixelIdx = idx * 4;
+                    
+                    if (result[pixelIdx] > 127 && !visited[idx]) {
+                        const component = [];
+                        const stack = [[x, y]];
+                        
+                        while (stack.length > 0 && component.length <= minSize + 10) {
+                            const [cx, cy] = stack.pop();
+                            const cidx = cy * width + cx;
+                            
+                            if (cx < 0 || cx >= width || cy < 0 || cy >= height || visited[cidx]) continue;
+                            if (result[cidx * 4] < 127) continue;
+                            
+                            visited[cidx] = 1;
+                            component.push([cx, cy]);
+                            
+                            stack.push([cx - 1, cy], [cx + 1, cy], [cx, cy - 1], [cx, cy + 1]);
+                        }
+                        
+                        if (component.length < minSize) {
+                            component.forEach(([px, py]) => {
+                                const pIdx = (py * width + px) * 4;
+                                result[pIdx] = result[pIdx + 1] = result[pIdx + 2] = 0;
+                            });
+                        }
+                    }
+                }
+            }
+            
+            return result;
+        }
+        
+        function keepHubComponent(data, width, height, hubX, hubY) {
+            const result = new Uint8ClampedArray(data.length);
+            const visited = new Uint8Array(width * height);
+            
+            const hx = Math.round(hubX);
+            const hy = Math.round(hubY);
+            
+            if (hx < 0 || hx >= width || hy < 0 || hy >= height) return data;
+            if (data[(hy * width + hx) * 4] < 127) return data;
+            
+            const stack = [[hx, hy]];
+            
+            while (stack.length > 0) {
+                const [cx, cy] = stack.pop();
+                const cidx = cy * width + cx;
+                
+                if (cx < 0 || cx >= width || cy < 0 || cy >= height || visited[cidx]) continue;
+                if (data[cidx * 4] < 127) continue;
+                
+                visited[cidx] = 1;
+                result[cidx * 4] = result[cidx * 4 + 1] = result[cidx * 4 + 2] = 255;
+                result[cidx * 4 + 3] = 255;
+                
+                stack.push([cx - 1, cy], [cx + 1, cy], [cx, cy - 1], [cx, cy + 1]);
+            }
+            
+            return result;
+        }
+        
+        function setZoom(newZoom) {
+            zoomLevel = Math.max(0.25, Math.min(3, newZoom));
+            canvas.style.transform = `scale(${zoomLevel})`;
+            canvas.style.transformOrigin = 'center';
+            document.getElementById('zoomLevel').textContent = Math.round(zoomLevel * 100) + '%';
+        }
+        
+        function getCanvasCoordinates(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            return { x, y };
+        }
+        
+        function handleMouseDown(e) {
+            const coords = getCanvasCoordinates(e);
+            
+            if (isCalibrating) {
+                addCalibrationPoint(coords.x, coords.y);
+                e.preventDefault();
+            } else if (currentTool === 'eraser') {
+                isDrawing = true;
+                drawAt(coords.x, coords.y);
+            } else if (currentTool === 'hub') {
+                setHub(coords.x, coords.y);
+            } else if (currentTool === 'exclude') {
+                drawingRect = true;
+                rectStart = coords;
+            }
+        }
+        
+        function handleMouseMove(e) {
+            const coords = getCanvasCoordinates(e);
+            
+            if (isDrawing && currentTool === 'eraser') {
+                drawAt(coords.x, coords.y);
+            } else if (drawingRect && rectStart) {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                ctx.putImageData(imageData, 0, 0);
+                ctx.strokeStyle = 'orange';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    rectStart.x, rectStart.y,
+                    coords.x - rectStart.x, coords.y - rectStart.y
+                );
+            }
+        }
+        
+        function handleMouseUp(e) {
+            if (isDrawing) {
+                isDrawing = false;
+            } else if (drawingRect && rectStart) {
+                const coords = getCanvasCoordinates(e);
+                const rect = {
+                    left: Math.min(rectStart.x, coords.x),
+                    right: Math.max(rectStart.x, coords.x),
+                    top: Math.min(rectStart.y, coords.y),
+                    bottom: Math.max(rectStart.y, coords.y)
+                };
+                
+                if (rect.right - rect.left > 5 && rect.bottom - rect.top > 5) {
+                    exclusionRects.push(rect);
+                }
+                
+                drawingRect = false;
+                rectStart = null;
+            }
+        }
+        
+        function drawAt(x, y) {
+            if (!processedImage) return;
+            
+            const size = parseInt(document.getElementById('toolSize').value);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imageData.data;
+            
+            for (let dy = -size; dy <= size; dy++) {
+                for (let dx = -size; dx <= size; dx++) {
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+                    if (distance <= size) {
+                        const px = Math.round(x + dx);
+                        const py = Math.round(y + dy);
+                        
+                        if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+                            const idx = (py * canvas.width + px) * 4;
+                            data[idx] = data[idx + 1] = data[idx + 2] = 0;
+                        }
+                    }
+                }
+            }
+            
+            ctx.putImageData(imageData, 0, 0);
+            
+            // Update full resolution
+            if (processedImage) {
+                const fullX = Math.round(x / displayScale);
+                const fullY = Math.round(y / displayScale);
+                const fullSize = Math.round(size / displayScale);
+                
+                const fullData = processedImage.data;
+                for (let dy = -fullSize; dy <= fullSize; dy++) {
+                    for (let dx = -fullSize; dx <= fullSize; dx++) {
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        if (distance <= fullSize) {
+                            const px = fullX + dx;
+                            const py = fullY + dy;
+                            
+                            if (px >= 0 && px < processedImage.width && py >= 0 && py < processedImage.height) {
+                                const idx = (py * processedImage.width + px) * 4;
+                                fullData[idx] = fullData[idx + 1] = fullData[idx + 2] = 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        function setHub(x, y) {
+            hubX = x / displayScale;
+            hubY = y / displayScale;
+            
+            ctx.fillStyle = 'yellow';
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(x, y, 4, 0, 2 * Math.PI);
+            ctx.fill();
+            ctx.stroke();
+        }
+        
+        function clearExclusions() {
+            exclusionRects = [];
+            if (!showingOriginal && fullResImageData) {
+                processImage();
+            }
+        }
+        
+        function startScaleCalibration() {
+            if (!originalImage) {
+                alert('Please load an image first');
+                return;
+            }
+            
+            // Show original image for calibration
+            if (!showingOriginal) {
+                ctx.putImageData(originalImage, 0, 0);
+            }
+            
+            isCalibrating = true;
+            calibrationPoints = [];
+            alert(`Click two points spanning ${gridSquares} grid square(s) on the original image`);
+        }
+        
+        function addCalibrationPoint(x, y) {
+            calibrationPoints.push({ x, y });
+            
+            ctx.fillStyle = '#ff4444';
+            ctx.beginPath();
+            ctx.arc(x, y, 3, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            if (calibrationPoints.length === 2) {
+                finishCalibration();
+            }
+        }
+        
+        function finishCalibration() {
+            if (calibrationPoints.length === 2) {
+                const dx = calibrationPoints[1].x - calibrationPoints[0].x;
+                const dy = calibrationPoints[1].y - calibrationPoints[0].y;
+                const pixelDistance = Math.sqrt(dx * dx + dy * dy) / displayScale;
+                
+                scale = gridSquares / pixelDistance;
+                
+                if (document.getElementById('rememberScale').checked) {
+                    sessionScale = scale;
+                }
+                
+                document.getElementById('pixelSize').value = (1 / scale).toFixed(2);
+                document.getElementById('mmSize').value = '1.00';
+                
+                alert(`Calibrated: ${(1/scale).toFixed(2)} pixels = 1.00 mm`);
+                
+                isCalibrating = false;
+                calibrationPoints = [];
+                
+                // Return to processed image if it exists
+                if (!showingOriginal && processedImage) {
+                    updateDisplay(processedImage.data, processedImage.width, processedImage.height);
+                }
+            }
+        }
+        
+        function measurePappus() {
+            if (!processedImage) {
+                alert('Please process the image first');
+                return;
+            }
+            
+            showProcessing();
+            
+            setTimeout(() => {
+                const data = processedImage.data;
+                const width = processedImage.width;
+                const height = processedImage.height;
+                
+                const metrics = calculateMetrics(data, width, height);
+                
+                // Update display
+                document.getElementById('currentMeasurement').style.display = 'block';
+                document.getElementById('areaValue').textContent = metrics.area_mm2.toFixed(2) + ' mm²';
+                document.getElementById('perimeterValue').textContent = metrics.perimeter_mm.toFixed(2) + ' mm';
+                document.getElementById('circularityValue').textContent = metrics.circularity.toFixed(3);
+                document.getElementById('feretMaxValue').textContent = metrics.feret_max_mm.toFixed(2) + ' mm';
+                
+                lastMeasurements = metrics;
+                perimeterData = metrics.boundary;
+                
+                document.getElementById('perimeterBtn').disabled = false;
+                
+                hideProcessing();
+            }, 10);
+        }
+        
+        function calculateMetrics(data, width, height) {
+            let area = 0;
+            const boundary = [];
+            let minX = width, maxX = 0, minY = height, maxY = 0;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    
+                    if (data[idx] === 255) {
+                        area++;
+                        minX = Math.min(minX, x);
+                        maxX = Math.max(maxX, x);
+                        minY = Math.min(minY, y);
+                        maxY = Math.max(maxY, y);
+                        
+                        const isEdge = (
+                            x === 0 || x === width - 1 || y === 0 || y === height - 1 ||
+                            (y > 0 && data[((y - 1) * width + x) * 4] === 0) ||
+                            (y < height - 1 && data[((y + 1) * width + x) * 4] === 0) ||
+                            (x > 0 && data[(y * width + x - 1) * 4] === 0) ||
+                            (x < width - 1 && data[(y * width + x + 1) * 4] === 0)
+                        );
+                        
+                        if (isEdge) {
+                            boundary.push({ x, y });
+                        }
+                    }
+                }
+            }
+            
+            const perimeter = boundary.length;
+            const hullArea = (maxX - minX) * (maxY - minY);
+            const feretMax = Math.sqrt((maxX - minX) * (maxX - minX) + (maxY - minY) * (maxY - minY));
+            const feretMin = Math.min(maxX - minX, maxY - minY);
+            
+            // Radial statistics
+            let radialMean = 0;
+            let radialSD = 0;
+            
+            if (hubX !== null && hubY !== null && boundary.length > 0) {
+                const radii = boundary.map(pt => {
+                    const dx = pt.x - hubX;
+                    const dy = pt.y - hubY;
+                    return Math.sqrt(dx * dx + dy * dy);
+                });
+                
+                radialMean = radii.reduce((a, b) => a + b, 0) / radii.length;
+                const variance = radii.reduce((sum, r) => sum + (r - radialMean) * (r - radialMean), 0) / radii.length;
+                radialSD = Math.sqrt(variance);
+            }
+            
+            // Convert to mm
+            const area_mm2 = area * scale * scale;
+            const perimeter_mm = perimeter * scale;
+            const hull_area_mm2 = hullArea * scale * scale;
+            const feret_max_mm = feretMax * scale;
+            const feret_min_mm = feretMin * scale;
+            const radial_mean_mm = radialMean * scale;
+            const radial_sd_mm = radialSD * scale;
+            
+            // Derived metrics
+            const circularity = perimeter > 0 ? (4 * Math.PI * area_mm2) / (perimeter_mm * perimeter_mm) : 0;
+            const solidity = hullArea > 0 ? area / hullArea : 0;
+            const convexity = perimeter > 0 ? (2 * Math.sqrt(Math.PI * area)) / perimeter : 0;
+            const radial_anisotropy = radialMean > 0 ? radialSD / radialMean : 0;
+            
+            return {
+                area_mm2,
+                perimeter_mm,
+                hull_area_mm2,
+                circularity,
+                solidity,
+                convexity,
+                feret_max_mm,
+                feret_min_mm,
+                radial_mean_mm,
+                radial_sd_mm,
+                radial_anisotropy,
+                boundary
+            };
+        }
+        
+        function togglePerimeter() {
+            if (!perimeterData) return;
+            
+            const btn = document.getElementById('perimeterBtn');
+            
+            if (!showingPerimeter) {
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+                
+                perimeterData.forEach(pt => {
+                    const x = Math.round(pt.x * displayScale);
+                    const y = Math.round(pt.y * displayScale);
+                    
+                    if (x >= 0 && x < canvas.width && y >= 0 && y < canvas.height) {
+                        const idx = (y * canvas.width + x) * 4;
+                        data[idx] = 255;
+                        data[idx + 1] = 0;
+                        data[idx + 2] = 0;
+                    }
+                });
+                
+                ctx.putImageData(imageData, 0, 0);
+                showingPerimeter = true;
+            } else {
+                if (processedImage) {
+                    updateDisplay(processedImage.data, processedImage.width, processedImage.height);
+                }
+                showingPerimeter = false;
+            }
+        }
+        
+        function resetImage() {
+            if (originalImage) {
+                ctx.putImageData(originalImage, 0, 0);
+                processedImage = null;
+                externalMask = null;
+                exclusionRects = [];
+                showingPerimeter = false;
+                showingOriginal = true;
+                document.getElementById('perimeterBtn').disabled = true;
+                document.getElementById('maskStatus').textContent = '';
+                document.getElementById('currentMeasurement').style.display = 'none';
+            }
+        }
+        
+        function addToTable() {
+            if (!lastMeasurements) {
+                alert('Please measure first');
+                return;
+            }
+            
+            const sampleName = document.getElementById('sampleName').value.trim();
+            if (!sampleName) {
+                alert('Please enter a sample name');
+                return;
+            }
+            
+            // Check if sample already exists
+            const existingIndex = measurementsTable.findIndex(m => m.sampleId === sampleName);
+            if (existingIndex >= 0) {
+                if (confirm(`Sample "${sampleName}" already exists. Replace it?`)) {
+                    measurementsTable[existingIndex] = {
+                        sampleId: sampleName,
+                        ...lastMeasurements
+                    };
+                } else {
+                    return;
+                }
+            } else {
+                measurementsTable.push({
+                    sampleId: sampleName,
+                    ...lastMeasurements
+                });
+            }
+            
+            updateTable();
+        }
+        
+        function updateTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+            
+            measurementsTable.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row.sampleId}</td>
+                    <td>${row.area_mm2.toFixed(2)}</td>
+                    <td>${row.perimeter_mm.toFixed(2)}</td>
+                    <td>${row.circularity.toFixed(3)}</td>
+                    <td>${row.solidity.toFixed(3)}</td>
+                    <td>${row.feret_max_mm.toFixed(2)}</td>
+                    <td><button onclick="removeFromTable(${index})" style="padding: 2px 6px; font-size: 10px;">Remove</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function removeFromTable(index) {
+            measurementsTable.splice(index, 1);
+            updateTable();
+        }
+        
+        function exportTableCSV() {
+            if (measurementsTable.length === 0) {
+                alert('No measurements in table');
+                return;
+            }
+            
+            let csv = 'Sample ID,Area (mm²),Perimeter (mm),Circularity,Solidity,Convexity,Max Feret (mm),Min Feret (mm),Mean Radius (mm),Radius SD (mm),Anisotropy\n';
+            
+            measurementsTable.forEach(row => {
+                csv += `${row.sampleId},${row.area_mm2.toFixed(2)},${row.perimeter_mm.toFixed(2)},`;
+                csv += `${row.circularity.toFixed(3)},${row.solidity.toFixed(3)},${row.convexity.toFixed(3)},`;
+                csv += `${row.feret_max_mm.toFixed(2)},${row.feret_min_mm.toFixed(2)},`;
+                csv += `${row.radial_mean_mm.toFixed(2)},${row.radial_sd_mm.toFixed(2)},${row.radial_anisotropy.toFixed(3)}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `pappus_measurements_${Date.now()}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
