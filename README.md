@@ -3,10 +3,10 @@
 Tools I built to extract **quantitative morphological measurements from images of plant structures** — automating trait measurement that would otherwise be slow, subjective manual work. Two domains, one theme: turning photographs into reproducible numbers.
 
 > **▶ Try it immediately — sample data included.**
-> - **Pappus (in-browser, no install):** open [`pappus-analyzer.html`](pappus-analyzer.html) in a browser, click *Drop image or click to upload*, choose [`seeds/examples/pappus_sample.png`](seeds/examples/pappus_sample.png), then **Process** → **Measure** to get area / perimeter / circularity / Feret morphometrics.
+> - **Pappus (in-browser, no install):** open [`pappus-analyzer.html`](pappus-analyzer.html) in a browser, click *Drop image or click to upload*, choose [`seeds/examples/pappus_sample.jpg`](seeds/examples/pappus_sample.jpg), then **Process** → **Measure** to get area / perimeter / circularity / Feret morphometrics.
 > - **Roots (Python):** `python roots/rsml_analyzer.py roots/examples/root_sample_t1.rsml` prints a full root-architecture report; `root_sample_t1.rsml` (early) and `root_sample_t2.rsml` (later) are a two-time-point pair.
 >
-> All bundled samples are **synthetic** (no real photos, traces, GPS or PII).
+> The root samples are **synthetic**; the pappus sample is **one real, de-identified seed photo** — metadata stripped, specimen label and scale bar cropped out (no species ID, GPS, or PII).
 
 ## 1. Root architecture (`roots/`)
 
@@ -44,7 +44,7 @@ image-morphometrics/
 
 ## Data policy
 
-**No real images, traces, or measurement data** are included — those are `.gitignore`d. The only data shipped are small **synthetic** demo samples (`seeds/examples/pappus_sample.png`, `roots/examples/*.rsml`) so the tools can be tried immediately; point the scripts at your own local image/RSML folder for real work.
+**No real measurement data, traces, or field metadata** are included — those are `.gitignore`d. The bundled demo samples let the tools be tried immediately: the root samples (`roots/examples/*.rsml`) are **synthetic**; the pappus sample (`seeds/examples/pappus_sample.jpg`) is **one real, de-identified seed photograph** (EXIF stripped; specimen label and scale bar cropped out; no species ID, GPS, locality, or PII). Point the scripts at your own local image/RSML folder for real work.
 
 ---
 

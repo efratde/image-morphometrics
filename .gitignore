@@ -15,10 +15,11 @@
 /data/
 /output/
 
-# Bundled demo/sample data (synthetic, non-sensitive) — DO ship these so the
-# tools can be tried immediately. Re-included from the patterns above.
+# Bundled demo/sample data — DO ship these so the tools can be tried immediately.
+# Re-included from the patterns above. Root samples are synthetic; the pappus
+# sample is one real, de-identified seed photo (metadata stripped, no PII).
 !seeds/examples/
-!seeds/examples/pappus_sample.png
+!seeds/examples/pappus_sample.jpg
 !roots/examples/
 !roots/examples/*.rsml
 
